@@ -24,24 +24,24 @@ const DomElement = function (selector = "", style = {}) {
 DomElement.prototype.addInPage = function () {
   const idTag = (this.selector + "").trim()[0];
   const nameAttr = (this.selector + "").trim().slice(1);
-  const symbols = {
+  const dictonary = {
     ".": { tag: "div", attr: "class" },
     "#": { tag: "p", attr: "id" },
   };
   let element = null;
 
-  if (idTag in symbols) {
-    const toCSS = (s) => s.replace(/[A-Z]/g, "-" + "$&").toLowerCase();
+  if (idTag in dictonary) {
+    const toCSSstyle = (s) => s.replace(/[A-Z]/g, "-" + "$&").toLowerCase();
 
     let cssText = "";
 
-    element = document.createElement(symbols[idTag].tag);
-    element.setAttribute(symbols[idTag].attr, nameAttr);
+    element = document.createElement(dictonary[idTag].tag);
+    element.setAttribute(dictonary[idTag].attr, nameAttr);
 
     Object.keys(this)
       .filter((key) => key !== "selector")
       .forEach((key) => {
-        cssText += `${toCSS(key === "bg" ? "background" : key)}: ${
+        cssText += `${toCSSstyle(key === "bg" ? "background" : key)}: ${
           this[key]
         }; `;
       });
@@ -54,18 +54,63 @@ DomElement.prototype.addInPage = function () {
   return element;
 };
 
-const mySquareId = new DomElement("#mySquareId", {
-  height: "100px",
-  width: "100px",
-  bg: "red",
+const myP = new DomElement("#myP", {
+  height: "12px",
+  width: "150px",
+  bg: "yellow",
   fontSize: "10px",
 });
 const myDiv = new DomElement(".myDiv", {
-  height: "120px",
-  width: "100px",
-  bg: "blue",
+  height: "12px",
+  width: "150px",
+  bg: "yellow",
   fontSize: "10px",
 });
 
-mySquareId.addInPage().textContent = "any text";
-myDiv.addInPage().textContent = "any text";
+myP.addInPage().textContent = "Это параграф";
+myDiv.addInPage().textContent = "А это дивный блок";
+
+const square = new DomElement(".square", {
+  height: "100px",
+  width: "100px",
+  background: "rgba(175,238,238,0.8)",
+  position: "absolute",
+  color: "blue",
+  top: "0px",
+  left: "0px",
+  border: "1px solid red",
+  boxSizing: "border-box",
+});
+const elSquare = square.addInPage();
+
+document.addEventListener("keydown", (event) => {
+  const step = 10;
+  let x = parseInt(elSquare.style.left),
+    width = parseInt(elSquare.style.width),
+    y = parseInt(elSquare.style.top),
+    height = parseInt(elSquare.style.height);
+
+  switch (event.key) {
+    case "ArrowRight":
+      x =
+        x + width + step > window.innerWidth
+          ? window.innerWidth - width
+          : x + step;
+      break;
+    case "ArrowLeft":
+      x = x < step ? 0 : x - step;
+
+      break;
+    case "ArrowDown":
+      y =
+        y + height + step > window.innerHeight
+          ? window.innerHeight - height
+          : y + step;
+      break;
+    case "ArrowUp":
+      y = y < step ? 0 : y - step;
+      break;
+  }
+  elSquare.style.left = x + "px";
+  elSquare.style.top = y + "px";
+});
